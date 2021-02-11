@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
 
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from rest_framework.permissions import AllowAny
 
 from datagouv.api.models import *
@@ -17,7 +17,20 @@ class DataGouvDefaultViewSet(viewsets.GenericViewSet):
     permission_classes = (AllowAny,)
 
 
-class StationViewSet(DataGouvDefaultViewSet):
+class DataGouvViewSet(mixins.CreateModelMixin,
+                      mixins.RetrieveModelMixin,
+                      mixins.UpdateModelMixin,
+                      mixins.DestroyModelMixin,
+                      mixins.ListModelMixin,
+                      DataGouvDefaultViewSet):
+    """
+    A viewset that provides default `create()`, `retrieve()`, `update()`,
+    `partial_update()`, `destroy()` and `list()` actions.
+    """
+    pass
+
+
+class StationViewSet(DataGouvViewSet):
     """
     API des stations
     """

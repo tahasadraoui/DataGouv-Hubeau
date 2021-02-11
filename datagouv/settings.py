@@ -37,15 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    # Project apps
-    'api',
 
     # DRF
     'rest_framework',
-    'rest_framework_swagger',
     'drf_yasg',
     'django_filters',
+
+    # Project apps
+    'datagouv.api',
 ]
 
 MIDDLEWARE = [
@@ -114,6 +113,9 @@ REST_FRAMEWORK = {
     ),
 }
 
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
+}
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/

@@ -17,22 +17,18 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls import url
 
-
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from drf_yasg.generators import OpenAPISchemaGenerator
 
 from rest_framework import permissions, routers
 
-
-from api.views import *
+from datagouv.api.views import *
 
 
 oa = openapi.Info(
-    title="DataGouv FR API",
+    title="Data Gouv FR API",
     default_version='v1',
-    description="This API allows caller to manage DataGouv Region 76 entities",
-    license=openapi.License(name="DataGouv License"),
 )
 
 schema_view = get_schema_view(
@@ -43,10 +39,10 @@ schema_view = get_schema_view(
 )
 
 router = routers.DefaultRouter()
-# router.register(r'stations', StationViewSet)
+router.register(r'stations', StationViewSet)
 
 urlpatterns = [
+    url(r'^(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     url(r'^$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    url(r'^api/', include(router.urls)),
-    path('admin/', admin.site.urls),
+    path('api/', include(router.urls)),
 ]
