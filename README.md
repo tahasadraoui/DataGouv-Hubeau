@@ -10,7 +10,7 @@ Projet Data Gouv Back :
 
 Create virtual env :
 
->   
+> virtualenv --python python3.7 env
 
 # Activate the virtual env (Windows):
 
