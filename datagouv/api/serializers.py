@@ -15,3 +15,10 @@ class StationSerializer(DataGouvSerializer):
     class Meta:
         model = Station
         fields = '__all__'
+
+
+class AnalyseSerializer(DataGouvSerializer):
+
+    class Meta:
+        model = Analyse
+        fields = '__all__'

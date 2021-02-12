@@ -37,3 +37,12 @@ class StationViewSet(DataGouvViewSet):
 
     queryset = Station.objects.all()
     serializer_class = StationSerializer
+
+
+class AnalyseViewSet(DataGouvViewSet):
+    """
+    API des analyses
+    """
+
+    queryset = Analyse.objects.all()
+    serializer_class = AnalyseSerializer
