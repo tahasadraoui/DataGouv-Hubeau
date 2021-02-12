@@ -3,8 +3,9 @@
 Projet Data Gouv Back :
 
 -   Python 3.7
--   Django
--   Postgres
+-   Django 3.1.6
+-   Django Rest Framework 3.12.2
+-   Postgresql 12
 
 # First installation
 
@@ -20,9 +21,13 @@ Create virtual env :
 
 > pip install -r requirements.txt
 
+# Create User and DB:
+
+> psql -U postgres -f ../create_database_datagouv.sql
+
 ## Run DB migrations
 
-> python manage.py runserver
+> python manage.py migrate
 
 ## Run dev server
 
