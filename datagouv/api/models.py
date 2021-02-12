@@ -21,6 +21,11 @@ class DataGouvModel(SafeDeleteModel):
 
 
 class Station(DataGouvModel):
+    """
+        Stations (lieux de mesure) sur les cours d'eau ou plans d'eau,
+        où des prélèvements d'eau ont eu lieu,
+        en vue de faire des analyses de la qualité de l'eau
+    """
 
     code = models.CharField(max_length=MAXIMUM_CODE_SIZE, unique=True)
     libelle = models.CharField(max_length=MAXIMUM_CODE_SIZE)
@@ -37,6 +42,11 @@ class Station(DataGouvModel):
 
 
 class Analyse(DataGouvModel):
+    """
+        Permet de rechercher les analyses physico-chimiques effectuées sur les échantillons confectionnés,
+        lors des opérations de prélèvement sur les différentes stations.
+        (conductivité, nitrates, substances pesticides ..)
+    """
 
     station = models.ForeignKey(Station, on_delete=models.CASCADE)
     nom_producteur = models.CharField(max_length=MAXIMUM_CODE_SIZE)

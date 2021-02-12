@@ -27,8 +27,10 @@ from datagouv.api.views import *
 
 
 oa = openapi.Info(
-    title="Data Gouv FR API",
+    title="Data Gouv FR API: L'API Chimie des cours d'eau de Hub'Eau",
+    description="Simplifier l'accès aux données sur l'eau",
     default_version='v1',
+    terms_of_service="https://api.gouv.fr/les-api/api_hubeau_qualite_rivieres",
 )
 
 schema_view = get_schema_view(
