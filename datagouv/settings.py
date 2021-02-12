@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+import datetime
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -145,3 +146,71 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# Logging
+# https://docs.djangoproject.com/en/3.1/topics/logging/#configuring-logging
+DEFAUT_LOGGING_LEVEL = 'INFO'
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'standard': {
+            'format': '[%(asctime)s] [%(levelname)s] [%(name)s:%(module)s:%(lineno)s - %(funcName)s()] %(message)s'
+        }
+    },
+    'handlers': {
+        'file': {
+            'level': DEFAUT_LOGGING_LEVEL,
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/datagouv.log',
+            'maxBytes': 1024*1024*5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'standard',
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard',
+            'level': DEFAUT_LOGGING_LEVEL,
+        },
+        'file_outgoing': {
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'formatter': 'standard',
+            'level': DEFAUT_LOGGING_LEVEL,
+            'filename': 'logs/datagouv.outgoing.'+str(datetime.date.today())+'.log',
+            'when': 'D',
+            'interval': 1
+        },
+    },
+    'loggers': {
+        '': {
+            'handlers': ['file', 'console'],
+            'level': DEFAUT_LOGGING_LEVEL,
+            'propagate': True
+        },
+        'django': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': True
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        # 'django.db.backends': {
+        #     'handlers': ['file_outgoing', 'console'],
+        #     'level': 'DEBUG',
+        #     'propagate': False,
+        # },
+        'urllib3.connectionpool': {
+            'handlers': ['file_outgoing', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'requests.packages.urllib3': {
+            'handlers': ['file_outgoing', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        }
+    }
+}
