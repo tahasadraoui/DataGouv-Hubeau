@@ -69,7 +69,7 @@ class SyncEntities(DataGouvModel):
 
     class Meta:
         managed = False
-    
+
     SYNC_ALL = 'SYNC_ALL'
     SYNC_STATIONS = 'SYNC_STATIONS'
     SYNC_ANALYSES = 'SYNC_ANALYSES'
@@ -80,3 +80,4 @@ class SyncEntities(DataGouvModel):
     )
 
     asked_operation = models.CharField(choices=SYNC_CHOICES, max_length=SHORT_CHAR_SIZE)
+    code_station = models.CharField(max_length=SHORT_CHAR_SIZE, blank=True, null=True)

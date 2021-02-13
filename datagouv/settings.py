@@ -154,23 +154,26 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
     'formatters': {
+        # 'standard': {
+        #     'format': '[%(asctime)s] [%(levelname)s] [%(name)s:%(module)s:%(lineno)s - %(funcName)s()] %(message)s'
+        # },
         'standard': {
-            'format': '[%(asctime)s] [%(levelname)s] [%(name)s:%(module)s:%(lineno)s - %(funcName)s()] %(message)s'
+            'format': '[%(asctime)s] [%(levelname)s] [%(name)s:%(module)s:%(lineno)s] %(message)s'
         }
     },
     'handlers': {
-        'file': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard',
+            'level': DEFAUT_LOGGING_LEVEL,
+        },
+        'file_incoming': {
             'level': DEFAUT_LOGGING_LEVEL,
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': 'logs/datagouv.log',
             'maxBytes': 1024*1024*5,  # 5 MB
             'backupCount': 5,
             'formatter': 'standard',
-        },
-        'console': {
-            'class': 'logging.StreamHandler',
-            'formatter': 'standard',
-            'level': DEFAUT_LOGGING_LEVEL,
         },
         'file_outgoing': {
             'class': 'logging.handlers.TimedRotatingFileHandler',
@@ -182,15 +185,20 @@ LOGGING = {
         },
     },
     'loggers': {
-        '': {
-            'handlers': ['file', 'console'],
+        'DataGouv': {
+            'handlers': ['file_incoming', 'console'],
             'level': DEFAUT_LOGGING_LEVEL,
-            'propagate': True
+            'propagate': False
         },
         'django': {
-            'handlers': ['file', 'console'],
+            'handlers': ['file_incoming', 'console'],
             'level': 'INFO',
-            'propagate': True
+            'propagate': False
+        },
+        'django.server': {
+            'handlers': ['file_incoming', 'console'],
+            'level': 'DEBUG',
+            'propagate': False,
         },
         'django.request': {
             'handlers': ['console'],
