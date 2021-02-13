@@ -7,21 +7,21 @@ Projet Data Gouv Back :
 -   Django Rest Framework 3.12.2
 -   Postgresql 12
 
-# First installation
+## First installation
 
 Create virtual env :
 
 > virtualenv --python python3.7 env
 
-# Activate the virtual env (Windows):
+## Activate the virtual env (Windows):
 
 > .\env\Scripts\activate
 
-# Install requirements in env:
+## Install requirements in env:
 
 > pip install -r requirements.txt
 
-# Create User and DB:
+## Create User and DB:
 
 > psql -U postgres -f ../create_database_datagouv.sql
 
@@ -33,7 +33,7 @@ Create virtual env :
 
 > python manage.py runserver
 
-### Run unit tests
+## Run unit tests
 
 > coverage run .\manage.py test --verbosity=2
 
@@ -41,4 +41,4 @@ Create virtual env :
 
 > coverage html
 
-> Then open htmlcov/index.html in your browser
+Then open htmlcov/index.html in your browser
