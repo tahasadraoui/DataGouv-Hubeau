@@ -22,3 +22,10 @@ class AnalyseSerializer(DataGouvSerializer):
     class Meta:
         model = Analyse
         fields = '__all__'
+
+
+class SyncEntitiesSerializer(DataGouvSerializer):
+
+    class Meta:
+        model = SyncEntities
+        fields = '__all__'

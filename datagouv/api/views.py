@@ -46,3 +46,12 @@ class AnalyseViewSet(DataGouvViewSet):
 
     queryset = Analyse.objects.all()
     serializer_class = AnalyseSerializer
+
+
+class SyncEntities(DataGouvViewSet):
+    """
+    API qui permettent de synchroniser des entités différentes (stations, analyses..)
+    """
+
+    serializer_class = SyncEntitiesSerializer
+    http_method_names = ['post']

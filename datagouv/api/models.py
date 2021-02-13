@@ -5,6 +5,7 @@ from safedelete.models import SafeDeleteModel
 from safedelete.config import HARD_DELETE
 
 # Constantes associées au modèle
+SHORT_CHAR_SIZE = 20
 MAXIMUM_CODE_SIZE = 200
 
 
@@ -22,7 +23,7 @@ class DataGouvModel(SafeDeleteModel):
 
 class Station(DataGouvModel):
     """
-        Stations (lieux de mesure) sur les cours d'eau ou plans d'eau,
+        Stations (lieux de mesures physiochimiques) sur les cours d'eau ou plans d'eau,
         où des prélèvements d'eau ont eu lieu,
         en vue de faire des analyses de la qualité de l'eau
     """
@@ -38,7 +39,7 @@ class Station(DataGouvModel):
     date_fin_prelevement = models.DateField(blank=True, null=True)
 
     def __str__(self):
-        return f"Code station: {self.code}, Libelle {self.libelle}, Code région {self.code_region}"
+        return f"Code station de mesures: {self.code}, Libelle {self.libelle}, Code région {self.code_region}"
 
 
 class Analyse(DataGouvModel):
@@ -62,3 +63,20 @@ class Analyse(DataGouvModel):
 
     def __str__(self):
         return f"Analyse sur la station {self.station.code}, producteur {self.nom_producteur},  sur le réseau {self.nom_reseau}"
+
+
+class SyncEntities(DataGouvModel):
+
+    class Meta:
+        managed = False
+    
+    SYNC_ALL = 'SYNC_ALL'
+    SYNC_STATIONS = 'SYNC_STATIONS'
+    SYNC_ANALYSES = 'SYNC_ANALYSES'
+    SYNC_CHOICES = (
+        (SYNC_ALL, 'Sync all'),
+        (SYNC_STATIONS, 'Sync stations'),
+        (SYNC_ANALYSES, 'Sync analyses'),
+    )
+
+    asked_operation = models.CharField(choices=SYNC_CHOICES, max_length=SHORT_CHAR_SIZE)
