@@ -32,3 +32,13 @@ Create virtual env :
 ## Run dev server
 
 > python manage.py runserver
+
+### Run unit tests
+
+> coverage run .\manage.py test --verbosity=2
+
+> coverage report -m
+
+> coverage html
+
+> Then open htmlcov/index.html in your browser

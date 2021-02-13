@@ -10,8 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
-from pathlib import Path
+import sys
+import logging
 import datetime
+from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -43,6 +45,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'django_filters',
+
+    # Unit tests
+    'django_nose',
 
     # Project apps
     'datagouv.api',
@@ -124,6 +129,7 @@ REST_FRAMEWORK = {
     ],
 }
 
+# Remove Django Login
 SWAGGER_SETTINGS = {
     'USE_SESSION_AUTH': False,
 }
@@ -222,3 +228,11 @@ LOGGING = {
         }
     }
 }
+
+# Unit tests
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+NOSE_ARGS = ['--cover-html-dir=reports/cover']
+
+TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
+if TESTING:
+    logging.disable(logging.CRITICAL)
