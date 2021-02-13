@@ -31,7 +31,7 @@ class Station(DataGouvModel):
     code = models.CharField(max_length=MAXIMUM_CODE_SIZE, unique=True)
     libelle = models.CharField(max_length=MAXIMUM_CODE_SIZE)
     code_departement = models.CharField(max_length=MAXIMUM_CODE_SIZE)
-    code_region = models.CharField(max_length=MAXIMUM_CODE_SIZE)
+    region_code = models.CharField(max_length=MAXIMUM_CODE_SIZE)
     libelle_region = models.CharField(max_length=MAXIMUM_CODE_SIZE)
     longitude = models.DecimalField(max_digits=8, decimal_places=2, max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
     longitude = models.DecimalField(max_digits=8, decimal_places=2, max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
@@ -39,7 +39,7 @@ class Station(DataGouvModel):
     date_fin_prelevement = models.DateField(blank=True, null=True)
 
     def __str__(self):
-        return f"Code station de mesures: {self.code}, Libelle {self.libelle}, Code région {self.code_region}"
+        return f"Code station de mesures: {self.code}, Libelle {self.libelle}, Code région {self.region_code}"
 
 
 class Analyse(DataGouvModel):
@@ -70,14 +70,16 @@ class SyncEntities(DataGouvModel):
     class Meta:
         managed = False
 
-    SYNC_ALL = 'SYNC_ALL'
     SYNC_STATIONS = 'SYNC_STATIONS'
     SYNC_ANALYSES = 'SYNC_ANALYSES'
+    SYNC_ALL = 'SYNC_ALL'
     SYNC_CHOICES = (
-        (SYNC_ALL, 'Sync all'),
         (SYNC_STATIONS, 'Sync stations'),
         (SYNC_ANALYSES, 'Sync analyses'),
+        (SYNC_ALL, 'Sync all'),
     )
 
-    asked_operation = models.CharField(choices=SYNC_CHOICES, max_length=SHORT_CHAR_SIZE)
-    code_station = models.CharField(max_length=SHORT_CHAR_SIZE, blank=True, null=True)
+    asked_operation = models.CharField(choices=SYNC_CHOICES, max_length=SHORT_CHAR_SIZE, default=SYNC_STATIONS)
+    region_code = models.CharField(max_length=SHORT_CHAR_SIZE, blank=True, null=True)
+    stations_found = models.IntegerField(blank=True, null=True)
+    analyses_found = models.IntegerField(blank=True, null=True)
