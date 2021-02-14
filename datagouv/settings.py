@@ -189,6 +189,14 @@ LOGGING = {
             'when': 'D',
             'interval': 1
         },
+        'database_hits': {
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'formatter': 'standard',
+            'level': 'DEBUG',
+            'filename': 'logs/database_hits.'+str(datetime.date.today())+'.log',
+            'when': 'D',
+            'interval': 1
+        },
     },
     'loggers': {
         'DataGouv': {
@@ -211,11 +219,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
-        # 'django.db.backends': {
-        #     'handlers': ['file_outgoing', 'console'],
-        #     'level': 'DEBUG',
-        #     'propagate': False,
-        #},
+        'django.db.backends': {
+            'handlers': ['database_hits'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
         'urllib3.connectionpool': {
             'handlers': ['file_outgoing', 'console'],
             'level': 'DEBUG',
