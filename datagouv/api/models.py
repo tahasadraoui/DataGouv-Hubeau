@@ -28,15 +28,16 @@ class Station(DataGouvModel):
         en vue de faire des analyses de la qualité de l'eau
     """
 
-    code = models.CharField(max_length=MAXIMUM_CODE_SIZE, unique=True)
-    libelle = models.CharField(max_length=MAXIMUM_CODE_SIZE)
-    code_departement = models.CharField(max_length=MAXIMUM_CODE_SIZE)
-    region_code = models.CharField(max_length=MAXIMUM_CODE_SIZE)
-    libelle_region = models.CharField(max_length=MAXIMUM_CODE_SIZE)
-    longitude = models.DecimalField(max_digits=8, decimal_places=2, max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
-    longitude = models.DecimalField(max_digits=8, decimal_places=2, max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
-    date_debut_prelevement = models.DateField(blank=True, null=True)
-    date_fin_prelevement = models.DateField(blank=True, null=True)
+    code = models.CharField(max_length=MAXIMUM_CODE_SIZE, unique=True, help_text="Identifiant de la station de mesure dans le référentiel national Sandre")
+    libelle = models.CharField(max_length=MAXIMUM_CODE_SIZE, help_text="Libellé national de la station de mesure")
+    code_departement = models.CharField(max_length=MAXIMUM_CODE_SIZE, help_text="Code INSEE du département")
+    region_code = models.CharField(max_length=MAXIMUM_CODE_SIZE, help_text="Code INSEE du département")
+    libelle_region = models.CharField(max_length=MAXIMUM_CODE_SIZE, help_text="Nom du département")
+    longitude = models.DecimalField(max_digits=8, decimal_places=2, max_length=MAXIMUM_CODE_SIZE)
+    longitude = models.DecimalField(max_digits=8, decimal_places=2, max_length=MAXIMUM_CODE_SIZE)
+    date_debut_prelevement = models.DateField()
+    date_fin_prelevement = models.DateField()
+    nature = models.DateField(help_text="Nature de la station de mesure")
 
     def __str__(self):
         return f"Code station de mesures: {self.code}, Libelle {self.libelle}, Code région {self.region_code}"
@@ -54,12 +55,12 @@ class Analyse(DataGouvModel):
     code_producteur = models.CharField(max_length=MAXIMUM_CODE_SIZE)
     nom_reseau = models.CharField(max_length=MAXIMUM_CODE_SIZE)
     code_reseau = models.CharField(max_length=MAXIMUM_CODE_SIZE)
-    incertitude_analytique = models.DecimalField(max_digits=8, decimal_places=2, max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
-    resultat = models.DecimalField(max_digits=8, decimal_places=2, max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
-    date_prelevement = models.DateField(blank=True, null=True)
-    heure_prelevement = models.TimeField(blank=True, null=True)
-    date_analyse = models.DateField(blank=True, null=True)
-    heure_analyse = models.TimeField(blank=True, null=True)
+    incertitude_analytique = models.DecimalField(max_digits=8, decimal_places=2, max_length=MAXIMUM_CODE_SIZE)
+    resultat = models.DecimalField(max_digits=8, decimal_places=2, max_length=MAXIMUM_CODE_SIZE, help_text="Résultat de l'analyse physico-chimique et microbiologique")
+    date_prelevement = models.DateField(help_text="Date du début du prélèvement d'échantillons")
+    heure_prelevement = models.TimeField(help_text="Heure du début du prélèvement d'échantillon")
+    date_analyse = models.DateField(help_text="Date de l'analyse physico-chimique et microbiologique")
+    heure_analyse = models.TimeField(help_text="Heure de l'analyse physico-chimique et microbiologique")
 
     def __str__(self):
         return f"Analyse sur la station {self.station.code}, producteur {self.nom_producteur},  sur le réseau {self.nom_reseau}"
