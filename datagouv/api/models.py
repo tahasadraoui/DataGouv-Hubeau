@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 from safedelete.config import HARD_DELETE
 from safedelete.models import SafeDeleteModel
@@ -27,16 +28,12 @@ class Station(DataGouvModel):
         en vue de faire des analyses de la qualité de l'eau
     """
 
-    code = models.CharField(max_length=MAXIMUM_CODE_SIZE, unique=True, help_text="Identifiant de la station de mesure dans le référentiel national Sandre")
-    libelle = models.CharField(max_length=MAXIMUM_CODE_SIZE, help_text="Libellé national de la station de mesure")
+    code_station = models.CharField(max_length=MAXIMUM_CODE_SIZE, unique=True, help_text="Identifiant de la station de mesure dans le référentiel national Sandre")
+    libelle_station = models.CharField(max_length=MAXIMUM_CODE_SIZE, help_text="Libellé national de la station de mesure")
     code_departement = models.CharField(max_length=MAXIMUM_CODE_SIZE, help_text="Code INSEE du département")
-    region_code = models.IntegerField(help_text="Code INSEE du département")
+    code_region = models.IntegerField(help_text="Code INSEE du département", validators=[MinValueValidator(1), MaxValueValidator(200)])
     libelle_region = models.CharField(max_length=MAXIMUM_CODE_SIZE, help_text="Nom du département")
-    longitude = models.DecimalField(max_digits=8, decimal_places=2, max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
-    longitude = models.DecimalField(max_digits=8, decimal_places=2, max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
-    date_debut_prelevement = models.DateField()
-    date_fin_prelevement = models.DateField()
-    nature = models.DateField(help_text="Nature de la station de mesure")
+    uri_station = models.CharField(max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
 
     def __str__(self):
         return f"Code station de mesures: {self.code}, Libelle {self.libelle}, Code région {self.region_code}"
@@ -70,17 +67,22 @@ class SyncEntities(DataGouvModel):
     class Meta:
         managed = False
 
+    GET_STATIONS = 'GET_STATIONS'
     SYNC_STATIONS = 'SYNC_STATIONS'
+    GET_ANALYSES = 'GET_ANALYSES'
     SYNC_ANALYSES = 'SYNC_ANALYSES'
-    SYNC_ALL = 'SYNC_ALL'
     SYNC_CHOICES = (
+        (GET_STATIONS, 'Get stations'),
         (SYNC_STATIONS, 'Sync stations'),
+        (GET_ANALYSES, 'Get analyses'),
         (SYNC_ANALYSES, 'Sync analyses'),
-        (SYNC_ALL, 'Sync all'),
     )
 
-    asked_operation = models.CharField(choices=SYNC_CHOICES, max_length=SHORT_CHAR_SIZE, default=SYNC_STATIONS)
-    region_code = models.IntegerField(blank=True, null=True)
-    stations_found = models.IntegerField(blank=True, null=True)
-    analyses_found = models.IntegerField(blank=True, null=True)
+    asked_operation = models.CharField(choices=SYNC_CHOICES, max_length=SHORT_CHAR_SIZE, default=GET_STATIONS)
+    region_code = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(200)])
+    entities_found = models.IntegerField(blank=True, null=True)
+    entities_created = models.IntegerField(blank=True, null=True)
+    entities_failed_to_create = models.IntegerField(blank=True, null=True)
+    entities_failed_to_create_or_update = models.IntegerField(blank=True, null=True)
+    entities_updated = models.IntegerField(blank=True, null=True)
     date_debut_prelevement = models.DateField(blank=True, null=True)

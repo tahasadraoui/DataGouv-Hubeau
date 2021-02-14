@@ -236,3 +236,6 @@ NOSE_ARGS = ['--cover-html-dir=reports/cover']
 TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
 if TESTING:
     logging.disable(logging.CRITICAL)
+
+# For demo purposes, inorder to demo the sync API
+MAXIMUM_PAGES = 2
