@@ -45,7 +45,7 @@ class HubEau:
         response = self.session.get(f"{url}&page={page}")
         if response.status_code == 206:
 
-            if page == settings.MAXIMUM_PAGES:
+            if hasattr(settings, 'MAXIMUM_PAGES') & page == settings.MAXIMUM_PAGES:
                 return response.json()["data"]
 
             if response.json()["next"]:
@@ -88,7 +88,7 @@ class HubEau:
 
         return result
 
-    def save_entities_to_db(self, entity, region_code):
+    def save_entities_to_db(self, entity, region_code, first_analyse_date=None):
         """
             This method creates or updates entities (stations, analyses) in the DB.
             - A station is identified by its code (unique)
@@ -99,7 +99,10 @@ class HubEau:
             EntityModel = Station
 
         elif entity == "analyses":
-            entities = self.get_analyses(region_code, first_analyse_date=None)
+            if first_analyse_date:
+                entities = self.get_analyses(region_code, first_analyse_date)
+            else:
+                entities = self.get_analyses(region_code)
             EntityModel = Analyse
 
         self.nb_entities_found = len(entities)
@@ -134,9 +137,9 @@ class HubEau:
 
         else:
 
-            for entity in entities:
+            for item in entities:
                 try:
-                    entity_values = {field: entity[field] for field in entity_fields}
+                    entity_values = {field: item[field] for field in entity_fields}
 
                     # Analyse -- Station ForeignKey
                     if entity == "analyses":

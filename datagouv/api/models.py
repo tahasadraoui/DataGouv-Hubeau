@@ -52,7 +52,7 @@ class Analyse(DataGouvModel):
     nom_reseau = models.CharField(max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
     code_reseau = models.CharField(max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
     incertitude_analytique = models.IntegerField(blank=True, null=True)
-    resultat = models.IntegerField(help_text="Résultat de l'analyse physico-chimique et microbiologique")
+    resultat = models.IntegerField(blank=True, null=True, help_text="Résultat de l'analyse physico-chimique et microbiologique")
     date_prelevement = models.DateField(help_text="Date du début du prélèvement d'échantillons")
     heure_prelevement = models.TimeField(help_text="Heure du début du prélèvement d'échantillon")
     date_analyse = models.DateField(help_text="Date de l'analyse physico-chimique et microbiologique", blank=True, null=True)

@@ -43,7 +43,8 @@ schema_view = get_schema_view(
 router = routers.DefaultRouter()
 router.register(r'stations', StationViewSet)
 router.register(r'analyses', AnalyseViewSet)
-router.register(r'sync_entities', SyncEntities, basename="sync_entities")
+router.register(r'sync_entities', SyncEntitiesViewSet, basename="sync_entities")
+router.register(r'metrics', MetricsViewSet, basename="metrics")
 
 urlpatterns = [
     url(r'^(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),

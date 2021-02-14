@@ -48,10 +48,19 @@ class AnalyseViewSet(DataGouvViewSet):
     serializer_class = AnalyseSerializer
 
 
-class SyncEntities(DataGouvViewSet):
+class SyncEntitiesViewSet(DataGouvViewSet):
     """
     API qui permettent de synchroniser des entités différentes (stations, analyses..)
     """
 
     serializer_class = SyncEntitiesSerializer
+    http_method_names = ['post']
+
+
+class MetricsViewSet(DataGouvViewSet):
+    """
+    API qui permettent de récuperer des metrics et des stats sur les stations et les analyses
+    """
+
+    serializer_class = MetricsSerializer
     http_method_names = ['post']

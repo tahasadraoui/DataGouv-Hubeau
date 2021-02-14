@@ -27,6 +27,7 @@ Create virtual env :
 
 ## Run DB migrations
 
+> python manage.py makemigrations
 > python manage.py migrate
 
 ## Run dev server

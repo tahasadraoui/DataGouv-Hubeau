@@ -249,4 +249,4 @@ NOSE_ARGS = ['--cover-html-dir=reports/cover']
 HUBEAU_API_URL = "https://hubeau.eaufrance.fr/api/v1/qualite_rivieres/"
 
 # For demo purposes, inorder to demo the sync API
-MAXIMUM_PAGES = 4
+MAXIMUM_PAGES = 40

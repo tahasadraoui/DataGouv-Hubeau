@@ -99,3 +99,19 @@ class SyncEntitiesSerializer(DataGouvSerializer):
         validated_data["entities_updated"] = hubeau_connector.nb_entities_updated
 
         return SyncEntities(**validated_data)
+
+
+class MetricsSerializer(serializers.Serializer):
+    
+    # class Meta(DataGouvSerializer.Meta):
+    #     model = Metrics
+    #     exclude = ['id', 'deleted']
+    
+    def create(self, validated_data):
+    
+        logger.info(f"MetricsSerializerSerializer create: {validated_data}")
+
+        # Best stations
+        # Analyse.objects.
+
+        return Metrics(**validated_data)
