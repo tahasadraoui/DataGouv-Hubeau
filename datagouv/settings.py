@@ -127,6 +127,8 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.MultiPartParser',
         'rest_framework.parsers.JSONParser',
     ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 20
 }
 
 # Remove Django Login
@@ -249,4 +251,4 @@ NOSE_ARGS = ['--cover-html-dir=reports/cover']
 HUBEAU_API_URL = "https://hubeau.eaufrance.fr/api/v1/qualite_rivieres/"
 
 # For demo purposes, inorder to demo the sync API
-MAXIMUM_PAGES = 40
+# MAXIMUM_PAGES = 40

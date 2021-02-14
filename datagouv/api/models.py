@@ -1,4 +1,8 @@
+import logging
+logger = logging.getLogger('DataGouv')
+
 from django.db import models
+from django.db.models import Avg
 from django.core.validators import MaxValueValidator, MinValueValidator
 
 from safedelete.config import HARD_DELETE
@@ -38,6 +42,16 @@ class Station(DataGouvModel):
     def __str__(self):
         return f"Code station de mesures: {self.code_station}, Libelle {self.libelle_station}, Région {self.libelle_region}"
 
+    @property
+    def results_average(self):
+
+        average = self.analyse_set.filter(resultat__isnull=False).aggregate(avg_results=Avg('incertitude_analytique'))['avg_results']
+
+        if average:
+            return round(average, 4)
+
+        return 0
+
 
 class Analyse(DataGouvModel):
     """
@@ -67,18 +81,14 @@ class SyncEntities(DataGouvModel):
     class Meta:
         managed = False
 
-    GET_STATIONS = 'GET_STATIONS'
     SYNC_STATIONS = 'SYNC_STATIONS'
-    GET_ANALYSES = 'GET_ANALYSES'
     SYNC_ANALYSES = 'SYNC_ANALYSES'
     SYNC_CHOICES = (
-        (GET_STATIONS, 'Get stations'),
         (SYNC_STATIONS, 'Sync stations'),
-        (GET_ANALYSES, 'Get analyses'),
         (SYNC_ANALYSES, 'Sync analyses'),
     )
 
-    asked_operation = models.CharField(choices=SYNC_CHOICES, max_length=SHORT_CHAR_SIZE, default=GET_STATIONS)
+    asked_operation = models.CharField(choices=SYNC_CHOICES, max_length=SHORT_CHAR_SIZE, default=SYNC_STATIONS)
     region_code = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(200)])
     entities_found = models.IntegerField(blank=True, null=True)
     entities_created = models.IntegerField(blank=True, null=True)
