@@ -2,7 +2,7 @@ from datagouv.api.models import *
 from rest_framework import serializers
 import requests
 import logging
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('DataGouv')
 
 
 class HubEau:
@@ -32,8 +32,6 @@ class HubEau:
             It's possible to get a sample, by specifying the maximum pages argument
         """
 
-        logger.info("Sync {entity} by region code {region_code}")
-
         result = []
 
         response = self.session.get(f"{url}&page={page}")
@@ -60,6 +58,8 @@ class HubEau:
     def sync_entites_by_region_code(self, entity, region_code):
         """
         """
+
+        logger.info(f"Sync {entity} by region code {region_code}")
 
         if entity not in ["stations", "analyses"]:
             raise serializers.ValidationError(f"An invalid type of entity was given to synchronise: {entity}")

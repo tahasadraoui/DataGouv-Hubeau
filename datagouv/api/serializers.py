@@ -63,7 +63,7 @@ class SyncEntitiesSerializer(DataGouvSerializer):
 
             try:
 
-                entities_found = hubeau_connector.sync_entites_by_region_code("stations", region_code)
+                entities_found = hubeau_connector.sync_entites_by_region_code(entities, region_code)
                 logger.info(f"{len(entities_found)} {entities} found, by region code {region_code}")
 
                 validated_data[f"{entities}_found"] = len(entities_found)
