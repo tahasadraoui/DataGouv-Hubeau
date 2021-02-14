@@ -49,6 +49,7 @@ class HubEau:
         if response.status_code == 206:
 
             if page == settings.MAXIMUM_PAGES:
+                self.nb_entities_found = len(response.json()["data"])
                 return response.json()["data"]
 
             if response.json()["next"]:
@@ -72,7 +73,9 @@ class HubEau:
 
         url = self.stations_url + f"?code_region={region_code}&exact_count=true&format=json&size=20"
 
-        return self.get_entities_by_region_code(url, region_code)
+        res = self.get_entities_by_region_code(url, region_code)
+
+        return res
 
     def get_analyses(self, region_code, first_analyse_date=None):
 

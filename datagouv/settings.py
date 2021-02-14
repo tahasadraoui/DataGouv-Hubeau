@@ -171,7 +171,7 @@ LOGGING = {
         'console': {
             'class': 'logging.StreamHandler',
             'formatter': 'standard',
-            'level': DEFAUT_LOGGING_LEVEL,
+            'level': 'DEBUG',
         },
         'file_incoming': {
             'level': DEFAUT_LOGGING_LEVEL,
@@ -184,7 +184,7 @@ LOGGING = {
         'file_outgoing': {
             'class': 'logging.handlers.TimedRotatingFileHandler',
             'formatter': 'standard',
-            'level': DEFAUT_LOGGING_LEVEL,
+            'level': 'DEBUG',
             'filename': 'logs/datagouv.outgoing.'+str(datetime.date.today())+'.log',
             'when': 'D',
             'interval': 1
@@ -215,17 +215,17 @@ LOGGING = {
         #     'handlers': ['file_outgoing', 'console'],
         #     'level': 'DEBUG',
         #     'propagate': False,
-        # },
+        #},
         'urllib3.connectionpool': {
             'handlers': ['file_outgoing', 'console'],
-            'level': 'INFO',
-            'propagate': False,
+            'level': 'DEBUG',
+            'propagate': True,
         },
-        'requests.packages.urllib3': {
-            'handlers': ['file_outgoing', 'console'],
-            'level': 'INFO',
-            'propagate': False,
-        }
+        # 'requests.packages.urllib3': {
+        #     'handlers': ['file_outgoing', 'console'],
+        #     'level': 'DEBUG',
+        #     'propagate': True,
+        # } # Enable for more http logs
     }
 }
 
@@ -238,4 +238,4 @@ if TESTING:
     logging.disable(logging.CRITICAL)
 
 # For demo purposes, inorder to demo the sync API
-MAXIMUM_PAGES = 2
+MAXIMUM_PAGES = 1
