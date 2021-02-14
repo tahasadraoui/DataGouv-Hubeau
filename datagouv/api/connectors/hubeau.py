@@ -1,8 +1,10 @@
-from datagouv.api.models import *
-from rest_framework import serializers
 import requests
 import logging
 logger = logging.getLogger('DataGouv')
+
+from rest_framework import serializers
+
+from datagouv.api.models import *
 
 
 class HubEau:
@@ -55,7 +57,7 @@ class HubEau:
 
         return result
 
-    def sync_entites_by_region_code(self, entity, region_code):
+    def sync_entites_by_region_code(self, entity, region_code, first_analyse_date=None):
         """
         """
 
@@ -68,6 +70,9 @@ class HubEau:
             url = self.stations_url + f"?code_region={region_code}&exact_count=true&format=json&size=20"
 
         elif entity == "analyses":
-            url = self.analyses_url + f"?code_region={region_code}&exact_count=true&format=json&size=20"
+            if first_analyse_date:
+                url = self.analyses_url + f"?code_region={region_code}&date_debut_prelevement={first_analyse_date}&exact_count=true&format=json&size=20"
+            else:
+                url = self.analyses_url + f"?code_region={region_code}&exact_count=true&format=json&size=20"
 
         return self.get_entities_by_region_code(url, region_code)

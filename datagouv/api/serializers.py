@@ -1,8 +1,10 @@
-from datagouv.api.connectors.hubeau import HubEau
-from datagouv.api.models import *
-from rest_framework import serializers
 import logging
 logger = logging.getLogger('DataGouv')
+
+from rest_framework import serializers
+
+from datagouv.api.models import *
+from datagouv.api.connectors.hubeau import HubEau
 
 
 class DataGouvSerializer(serializers.ModelSerializer):
@@ -26,9 +28,6 @@ class AnalyseSerializer(DataGouvSerializer):
 
 class SyncEntitiesSerializer(DataGouvSerializer):
 
-    stations_found = serializers.IntegerField(required=False)
-    analyses_found = serializers.IntegerField(required=False)
-
     class Meta(DataGouvSerializer.Meta):
         model = SyncEntities
         exclude = ['id', 'deleted']
@@ -39,6 +38,7 @@ class SyncEntitiesSerializer(DataGouvSerializer):
 
         asked_operation = validated_data["asked_operation"]
         region_code = validated_data.get("region_code", None)
+        first_analyse_date = validated_data.get("date_debut_prelevement", None)  # Les résultats/ les analyses à partir de
 
         if asked_operation == 'SYNC_ALL':
             logger.info(f"Sync all entities from Hub'Eau: stations + analyses: Not implemented yet")
@@ -62,14 +62,17 @@ class SyncEntitiesSerializer(DataGouvSerializer):
             hubeau_connector = HubEau()
 
             try:
+                if first_analyse_date:
+                    entities_found = hubeau_connector.sync_entites_by_region_code(entities, region_code, first_analyse_date)
+                else:
+                    entities_found = hubeau_connector.sync_entites_by_region_code(entities, region_code)
 
-                entities_found = hubeau_connector.sync_entites_by_region_code(entities, region_code)
                 logger.info(f"{len(entities_found)} {entities} found, by region code {region_code}")
 
                 validated_data[f"{entities}_found"] = len(entities_found)
 
             except Exception as e:
                 logger.error(e)
-                raise serializers.ValidationError("An error occured while getting the {entities}.")
+                raise serializers.ValidationError(f"An error occured while getting the {entities}.")
 
         return SyncEntities(**validated_data)

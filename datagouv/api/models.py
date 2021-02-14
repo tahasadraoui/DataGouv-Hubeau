@@ -1,8 +1,7 @@
 from django.db import models
 
-from safedelete.models import SafeDeleteModel
-
 from safedelete.config import HARD_DELETE
+from safedelete.models import SafeDeleteModel
 
 # Constantes associées au modèle
 SHORT_CHAR_SIZE = 20
@@ -31,10 +30,10 @@ class Station(DataGouvModel):
     code = models.CharField(max_length=MAXIMUM_CODE_SIZE, unique=True, help_text="Identifiant de la station de mesure dans le référentiel national Sandre")
     libelle = models.CharField(max_length=MAXIMUM_CODE_SIZE, help_text="Libellé national de la station de mesure")
     code_departement = models.CharField(max_length=MAXIMUM_CODE_SIZE, help_text="Code INSEE du département")
-    region_code = models.CharField(max_length=MAXIMUM_CODE_SIZE, help_text="Code INSEE du département")
+    region_code = models.IntegerField(help_text="Code INSEE du département")
     libelle_region = models.CharField(max_length=MAXIMUM_CODE_SIZE, help_text="Nom du département")
-    longitude = models.DecimalField(max_digits=8, decimal_places=2, max_length=MAXIMUM_CODE_SIZE)
-    longitude = models.DecimalField(max_digits=8, decimal_places=2, max_length=MAXIMUM_CODE_SIZE)
+    longitude = models.DecimalField(max_digits=8, decimal_places=2, max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
+    longitude = models.DecimalField(max_digits=8, decimal_places=2, max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
     date_debut_prelevement = models.DateField()
     date_fin_prelevement = models.DateField()
     nature = models.DateField(help_text="Nature de la station de mesure")
@@ -81,6 +80,7 @@ class SyncEntities(DataGouvModel):
     )
 
     asked_operation = models.CharField(choices=SYNC_CHOICES, max_length=SHORT_CHAR_SIZE, default=SYNC_STATIONS)
-    region_code = models.CharField(max_length=SHORT_CHAR_SIZE, blank=True, null=True)
+    region_code = models.IntegerField(blank=True, null=True)
     stations_found = models.IntegerField(blank=True, null=True)
     analyses_found = models.IntegerField(blank=True, null=True)
+    date_debut_prelevement = models.DateField(blank=True, null=True)
