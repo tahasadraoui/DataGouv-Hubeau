@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 
-class SyncEntitiesAuth(TestCase):
+class SyncEntitiesTestCase(TestCase):
 
     def setUp(self):
 

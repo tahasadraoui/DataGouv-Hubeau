@@ -36,7 +36,7 @@ class Station(DataGouvModel):
     uri_station = models.CharField(max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
 
     def __str__(self):
-        return f"Code station de mesures: {self.code}, Libelle {self.libelle}, Code région {self.region_code}"
+        return f"Code station de mesures: {self.code_station}, Libelle {self.libelle_station}, Région {self.libelle_region}"
 
 
 class Analyse(DataGouvModel):
@@ -49,17 +49,17 @@ class Analyse(DataGouvModel):
     station = models.ForeignKey(Station, on_delete=models.CASCADE)
     nom_producteur = models.CharField(max_length=MAXIMUM_CODE_SIZE)
     code_producteur = models.CharField(max_length=MAXIMUM_CODE_SIZE)
-    nom_reseau = models.CharField(max_length=MAXIMUM_CODE_SIZE)
-    code_reseau = models.CharField(max_length=MAXIMUM_CODE_SIZE)
-    incertitude_analytique = models.DecimalField(max_digits=8, decimal_places=2, max_length=MAXIMUM_CODE_SIZE)
-    resultat = models.DecimalField(max_digits=8, decimal_places=2, max_length=MAXIMUM_CODE_SIZE, help_text="Résultat de l'analyse physico-chimique et microbiologique")
+    nom_reseau = models.CharField(max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
+    code_reseau = models.CharField(max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
+    incertitude_analytique = models.IntegerField(blank=True, null=True)
+    resultat = models.IntegerField(help_text="Résultat de l'analyse physico-chimique et microbiologique")
     date_prelevement = models.DateField(help_text="Date du début du prélèvement d'échantillons")
     heure_prelevement = models.TimeField(help_text="Heure du début du prélèvement d'échantillon")
-    date_analyse = models.DateField(help_text="Date de l'analyse physico-chimique et microbiologique")
-    heure_analyse = models.TimeField(help_text="Heure de l'analyse physico-chimique et microbiologique")
+    date_analyse = models.DateField(help_text="Date de l'analyse physico-chimique et microbiologique", blank=True, null=True)
+    heure_analyse = models.TimeField(help_text="Heure de l'analyse physico-chimique et microbiologique", blank=True, null=True)
 
     def __str__(self):
-        return f"Analyse sur la station {self.station.code}, producteur {self.nom_producteur},  sur le réseau {self.nom_reseau}"
+        return f"Analyse sur la station {self.station.code_station}, producteur {self.nom_producteur}, sur le réseau {self.nom_reseau}, la date de {self.date_analyse} {self.heure_analyse}"
 
 
 class SyncEntities(DataGouvModel):

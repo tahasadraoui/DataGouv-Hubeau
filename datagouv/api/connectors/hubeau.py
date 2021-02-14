@@ -17,9 +17,9 @@ class HubEau:
 
     def __init__(self):
 
-        self.api_url = "https://hubeau.eaufrance.fr/api/v1/"
-        self.stations_path = "qualite_rivieres/station_pc"
-        self.analyses_path = "qualite_rivieres/analyse_pc"
+        self.api_url = settings.HUBEAU_API_URL
+        self.stations_path = "station_pc"
+        self.analyses_path = "analyse_pc"
 
         self.stations_url = f"{self.api_url}{self.stations_path}"
         self.analyses_url = f"{self.api_url}{self.analyses_path}"
@@ -32,9 +32,6 @@ class HubEau:
         self.nb_entities_failed_to_create = 0
         self.nb_entities_updated = 0
         self.nb_entities_failed = 0
-
-    def report(self):
-        pass
 
     def get_entities_by_region_code(self, url, region_code, page=1):
         """
@@ -49,7 +46,6 @@ class HubEau:
         if response.status_code == 206:
 
             if page == settings.MAXIMUM_PAGES:
-                self.nb_entities_found = len(response.json()["data"])
                 return response.json()["data"]
 
             if response.json()["next"]:
@@ -65,17 +61,17 @@ class HubEau:
             logger.error(f"Error occured while getting stations: {response.status_code}, {response.text}")
             return False
 
-        self.nb_entities_found = len(result)
-
         return result
 
     def get_stations(self, region_code):
 
         url = self.stations_url + f"?code_region={region_code}&exact_count=true&format=json&size=20"
 
-        res = self.get_entities_by_region_code(url, region_code)
+        result = self.get_entities_by_region_code(url, region_code)
+        if result:
+            self.nb_entities_found = len(result)
 
-        return res
+        return result
 
     def get_analyses(self, region_code, first_analyse_date=None):
 
@@ -85,7 +81,12 @@ class HubEau:
         else:
             url = self.analyses_url + f"?code_region={region_code}&exact_count=true&format=json&size=20"
 
-        return self.get_entities_by_region_code(url, region_code)
+        result = self.get_entities_by_region_code(url, region_code)
+
+        if result:
+            self.nb_entities_found = len(result)
+
+        return result
 
     def save_entities_to_db(self, entity, region_code):
         """

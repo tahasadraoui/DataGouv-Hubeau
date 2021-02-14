@@ -1,6 +1,6 @@
 [run]
 source = .
-omit = *tests*,*manage.py,*__init__.py,*migrations*,*asgi*,*wsgi*,*admin.py, venv/*
+omit = *tests*, *apps*, *manage.py,*__init__.py,*migrations*,*asgi*,*wsgi*, venv/*
 
 [report]
-omit =*tests*,*manage.py,*__init__.py,*migrations*,*asgi*,*wsgi*,*admin.py, venv/*
+omit =*tests*, *apps*, *manage.py,*__init__.py,*migrations*,*asgi*,*wsgi*, venv/*
