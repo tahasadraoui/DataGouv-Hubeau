@@ -39,7 +39,7 @@ class HubEau:
         response = self.session.get(f"{url}&page={page}")
         if response.status_code == 206:
 
-            if page == 3:
+            if page == 1:
                 return response.json()["data"]
 
             if response.json()["next"]:

@@ -63,13 +63,13 @@ class SyncEntitiesSerializer(DataGouvSerializer):
 
             try:
 
-                stations = hubeau_connector.sync_entites_by_region_code("stations", region_code)
-                logger.info(f"{len(stations)} stations found, by region code {region_code}")
+                entities_found = hubeau_connector.sync_entites_by_region_code("stations", region_code)
+                logger.info(f"{len(entities_found)} {entities} found, by region code {region_code}")
 
-                validated_data["stations_found"] = len(stations)
+                validated_data[f"{entities}_found"] = len(entities_found)
 
             except Exception as e:
                 logger.error(e)
-                raise serializers.ValidationError("An error occured while getting the stations.")
+                raise serializers.ValidationError("An error occured while getting the {entities}.")
 
         return SyncEntities(**validated_data)
