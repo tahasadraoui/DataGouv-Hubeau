@@ -60,16 +60,16 @@ class SyncEntitiesSerializer(DataGouvSerializer):
         elif asked_operation == 'SYNC_ANALYSES':
             logger.info(f"Sync analyses from Hub'Eau")
 
-            # try:
+            try:
 
-            if first_analyse_date:
-                hubeau_connector.save_entities_by_page_to_db("analyses", region_code, first_analyse_date)
-            else:
-                hubeau_connector.save_entities_by_page_to_db("analyses", region_code)
+                if first_analyse_date:
+                    hubeau_connector.save_entities_by_page_to_db("analyses", region_code, first_analyse_date)
+                else:
+                    hubeau_connector.save_entities_by_page_to_db("analyses", region_code)
 
-            # except Exception as e:
-            #     logger.error(e)
-            #     raise serializers.ValidationError(f"An error occured while synchronizing the analyses.")
+            except Exception as e:
+                logger.error(e)
+                raise serializers.ValidationError(f"An error occured while synchronizing the analyses.")
 
         validated_data["entities_found"] = hubeau_connector.nb_entities_found
         validated_data["entities_created"] = hubeau_connector.nb_entities_created
@@ -86,10 +86,7 @@ class MetricsSerializer(serializers.Serializer):
     worst_stations = StationSerializer(many=True, required=False)
     number_of_items = serializers.IntegerField(required=False)
     region_code = serializers.IntegerField(required=False)
-
-    # class Meta(DataGouvSerializer.Meta):
-    #     model = Metrics
-    #     exclude = ['id', 'deleted']
+    average_results_by_departement = serializers.DictField(required=False)
 
     def create(self, validated_data):
 
@@ -98,16 +95,28 @@ class MetricsSerializer(serializers.Serializer):
         region_code = validated_data.get("region_code", None)
         number_of_items = validated_data.get("number_of_items", 10)
 
-        stations = Station.objects.filter(analyse__resultat__isnull=False)
+        stations_queryset = Station.objects.filter(analyse__resultat__isnull=False)
+            
         if region_code:
-            stations = stations.filter(code_region=region_code)
+            stations_queryset = Station.objects.all().filter(code_region=region_code)
 
         response = {}
 
-        stations = stations.annotate(avg_results=Avg('analyse__resultat')).order_by('avg_results')
+        # Average results by stations
+        stations = stations_queryset.annotate(avg_results=Avg('analyse__resultat')).order_by('avg_results')
         response["best_stations"] = stations[:number_of_items]
 
         stations = stations.order_by('-avg_results')
         response["worst_stations"] = stations[:number_of_items]
+
+        # Average results by departements
+        stations = stations_queryset.values('code_departement') \
+            .annotate(avg_results=Avg('analyse__resultat')) \
+            .order_by('avg_results') \
+            .values_list('avg_results', 'code_departement')
+
+        response["average_results_by_departement"] = {int(item[1]): item[0] for item in stations}
+
+        # Cours d'eau
 
         return response

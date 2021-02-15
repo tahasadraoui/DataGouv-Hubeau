@@ -34,8 +34,8 @@ class Station(DataGouvModel):
 
     code_station = models.CharField(max_length=MAXIMUM_CODE_SIZE, unique=True, help_text="Identifiant de la station de mesure dans le référentiel national Sandre")
     libelle_station = models.CharField(max_length=MAXIMUM_CODE_SIZE, help_text="Libellé national de la station de mesure")
-    code_departement = models.CharField(max_length=MAXIMUM_CODE_SIZE, help_text="Code INSEE du département")
-    code_region = models.IntegerField(help_text="Code INSEE du département", validators=[MinValueValidator(1), MaxValueValidator(200)])
+    code_departement = models.IntegerField(help_text="Code INSEE du département")
+    code_region = models.IntegerField(help_text="Code INSEE de la région", validators=[MinValueValidator(1), MaxValueValidator(200)])
     libelle_region = models.CharField(max_length=MAXIMUM_CODE_SIZE, help_text="Nom du département")
     uri_station = models.CharField(max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
 
@@ -65,8 +65,8 @@ class Analyse(DataGouvModel):
     code_producteur = models.CharField(max_length=MAXIMUM_CODE_SIZE)
     nom_reseau = models.CharField(max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
     code_reseau = models.CharField(max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
-    incertitude_analytique = models.IntegerField(blank=True, null=True)
-    resultat = models.IntegerField(blank=True, null=True, help_text="Résultat de l'analyse physico-chimique et microbiologique")
+    incertitude_analytique = models.DecimalField(max_digits=16, decimal_places=4, blank=True, null=True)
+    resultat = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True, help_text="Résultat de l'analyse physico-chimique et microbiologique")
     date_prelevement = models.DateField(help_text="Date du début du prélèvement d'échantillons")
     heure_prelevement = models.TimeField(help_text="Heure du début du prélèvement d'échantillon")
     date_analyse = models.DateField(help_text="Date de l'analyse physico-chimique et microbiologique", blank=True, null=True)

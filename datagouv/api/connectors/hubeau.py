@@ -1,4 +1,5 @@
 import time
+import decimal
 import requests
 import logging
 logger = logging.getLogger('DataGouv')
@@ -55,10 +56,14 @@ class HubEau:
         for item in data:
             try:
                 entity_values = {field: item[field] for field in entity_fields}
-
+                
                 # Analyse -- Station ForeignKey
                 if entity == "analyses":
                     entity_values["station"] = Station.objects.get(code_station=item["code_station"])
+                    if entity_values["incertitude_analytique"]:
+                        entity_values["incertitude_analytique"] = round(decimal.Decimal(entity_values["incertitude_analytique"]), 4)
+                    if entity_values["resultat"]:
+                        entity_values["resultat"] = round(decimal.Decimal(entity_values["resultat"]), 4)
 
                 obj, created = EntityModel.objects.get_or_create(**entity_values)
 
