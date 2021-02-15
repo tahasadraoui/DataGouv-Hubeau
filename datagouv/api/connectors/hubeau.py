@@ -1,4 +1,5 @@
 import time
+import datetime
 import decimal
 import requests
 import logging
@@ -92,8 +93,12 @@ class HubEau:
 
             if first_analyse_date:
                 # https://hubeau.eaufrance.fr/page/api-qualite-cours-deau-tuto
-                url = self.analyses_url + \
-                    f"?code_region={region_code}&date_debut_prelevement={first_analyse_date}&exact_count=true&format=json&size=20"
+                url = self.analyses_url + f"?code_region={region_code}&date_debut_prelevement={first_analyse_date}&exact_count=true&format=json&size=20"
+            
+                end_date = first_analyse_date + datetime.timedelta(days=15)
+
+                url += f"&date_fin_prelevement={str(end_date)}"
+            
             else:
                 url = self.analyses_url + f"?code_region={region_code}&exact_count=true&format=json&size=20"
 
