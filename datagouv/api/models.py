@@ -45,7 +45,7 @@ class Station(DataGouvModel):
     @property
     def results_average(self):
 
-        average = self.analyse_set.filter(resultat__isnull=False).aggregate(avg_results=Avg('incertitude_analytique'))['avg_results']
+        average = self.analyse_set.filter(resultat__isnull=False).aggregate(avg_results=Avg('resultat'))['avg_results']
 
         if average:
             return round(average, 4)
@@ -66,7 +66,7 @@ class Analyse(DataGouvModel):
     nom_reseau = models.CharField(max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
     code_reseau = models.CharField(max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
     incertitude_analytique = models.DecimalField(max_digits=16, decimal_places=4, blank=True, null=True)
-    resultat = models.DecimalField(max_digits=8, decimal_places=4, blank=True, null=True, help_text="Résultat de l'analyse physico-chimique et microbiologique")
+    resultat = models.DecimalField(max_digits=10, decimal_places=4, blank=True, null=True, help_text="Résultat de l'analyse physico-chimique et microbiologique")
     date_prelevement = models.DateField(help_text="Date du début du prélèvement d'échantillons")
     heure_prelevement = models.TimeField(help_text="Heure du début du prélèvement d'échantillon")
     date_analyse = models.DateField(help_text="Date de l'analyse physico-chimique et microbiologique", blank=True, null=True)

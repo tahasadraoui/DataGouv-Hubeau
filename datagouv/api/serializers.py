@@ -96,17 +96,18 @@ class MetricsSerializer(serializers.Serializer):
         number_of_items = validated_data.get("number_of_items", 10)
 
         stations_queryset = Station.objects.filter(analyse__resultat__isnull=False)
-            
+
         if region_code:
-            stations_queryset = Station.objects.all().filter(code_region=region_code)
+            stations_queryset = stations_queryset.filter(code_region=region_code)
 
         response = {}
 
         # Average results by stations
-        stations = stations_queryset.annotate(avg_results=Avg('analyse__resultat')).order_by('avg_results')
+        stations = stations_queryset.annotate(avg_results=Avg('analyse__resultat')).order_by('-avg_results')
+
         response["best_stations"] = stations[:number_of_items]
 
-        stations = stations.order_by('-avg_results')
+        stations = stations.order_by('avg_results')
         response["worst_stations"] = stations[:number_of_items]
 
         # Average results by departements
@@ -116,7 +117,5 @@ class MetricsSerializer(serializers.Serializer):
             .values_list('avg_results', 'code_departement')
 
         response["average_results_by_departement"] = {int(item[1]): item[0] for item in stations}
-
-        # Cours d'eau
 
         return response
