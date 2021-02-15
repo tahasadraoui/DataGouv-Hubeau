@@ -86,7 +86,7 @@ class MetricsSerializer(serializers.Serializer):
     worst_stations = StationSerializer(many=True, required=False)
     number_of_items = serializers.IntegerField(required=False)
     region_code = serializers.IntegerField(required=False)
-    average_results_by_departement = serializers.DictField(required=False)
+    average_results_by_departement = serializers.ListField(required=False)
 
     def create(self, validated_data):
 
@@ -116,6 +116,6 @@ class MetricsSerializer(serializers.Serializer):
             .order_by('avg_results') \
             .values_list('avg_results', 'code_departement')
 
-        response["average_results_by_departement"] = {int(item[1]): item[0] for item in stations}
+        response["average_results_by_departement"] = [{'code_departement': int(item[1]), 'avarage_result': item[0]} for item in stations]
 
         return response
