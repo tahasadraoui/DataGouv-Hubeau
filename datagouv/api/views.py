@@ -6,6 +6,7 @@ from rest_framework.permissions import AllowAny
 
 from datagouv.api.models import *
 from datagouv.api.serializers import *
+from datagouv.api.filters import *
 
 
 class DataGouvDefaultViewSet(viewsets.GenericViewSet):
@@ -37,6 +38,7 @@ class StationViewSet(DataGouvViewSet):
 
     queryset = Station.objects.all()
     serializer_class = StationSerializer
+    filter_class = StationFilterClass
 
 
 class AnalyseViewSet(DataGouvViewSet):
@@ -46,6 +48,7 @@ class AnalyseViewSet(DataGouvViewSet):
 
     queryset = Analyse.objects.all()
     serializer_class = AnalyseSerializer
+    filter_class = AnalyseFilterClass
 
 
 class SyncEntitiesViewSet(DataGouvViewSet):

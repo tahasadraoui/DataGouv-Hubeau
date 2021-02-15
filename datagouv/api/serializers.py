@@ -51,7 +51,7 @@ class SyncEntitiesSerializer(DataGouvSerializer):
 
             try:
 
-                hubeau_connector.save_entities_by_page_to_db("stations", region_code)
+                hubeau_connector.save_stations_by_page_to_db(region_code)
 
             except Exception as e:
                 logger.error(e)
@@ -60,12 +60,11 @@ class SyncEntitiesSerializer(DataGouvSerializer):
         elif asked_operation == 'SYNC_ANALYSES':
             logger.info(f"Sync analyses from Hub'Eau")
 
-            try:
+            if not first_analyse_date:
+                raise serializers.ValidationError(f"Missing parameter to sync analyses.")
 
-                if first_analyse_date:
-                    hubeau_connector.save_entities_by_page_to_db("analyses", region_code, first_analyse_date)
-                else:
-                    hubeau_connector.save_entities_by_page_to_db("analyses", region_code)
+            try:
+                hubeau_connector.save_analyses_by_page_and_week_to_db(region_code, first_analyse_date)
 
             except Exception as e:
                 logger.error(e)

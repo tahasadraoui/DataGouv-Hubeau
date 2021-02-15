@@ -23,7 +23,7 @@ Create virtual env :
 
 ## Create User and DB:
 
-> psql -U postgres -f ../create_database_datagouv.sql
+> psql -U postgres -f create_database_datagouv.sql
 
 ## Run DB migrations
 
