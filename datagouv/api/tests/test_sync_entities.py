@@ -1645,3 +1645,15 @@ class SyncEntitiesTestCase(TestCase):
                 "This field is required."
             ]
         })
+
+        #
+        payload = {
+            "asked_operation": "SYNC_ANALYSES",
+            "region_code": 76
+        }
+
+        response = self.client.post(self.sync_entities_api_url, data=payload)
+
+        self.assertIsNotNone(response)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), ['Missing parameter to sync analyses.'])

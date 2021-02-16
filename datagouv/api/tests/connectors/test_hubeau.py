@@ -4,6 +4,8 @@ from unittest import skip
 from django.test import TestCase, override_settings
 from django.conf import settings
 
+from rest_framework import serializers
+
 from datagouv.api.connectors.hubeau import HubEau
 from datagouv.api.models import Station, Analyse
 
@@ -1776,6 +1778,10 @@ class HubEauTestCase(TestCase):
 
     @responses.activate
     def test_synchronize_entities(self):
+
+        # 0. Invalid entity type
+        with self.assertRaisesMessage(serializers.ValidationError, expected_message='An unsupported entity type given to sync: operations'):
+            self.hub_eau.synchronize_entities("operations", 76)
 
         # 1. Stations
         # Empty DB
