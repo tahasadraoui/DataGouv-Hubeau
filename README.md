@@ -35,7 +35,7 @@ Create virtual env :
 
 > Restore the datagouv_bak.sql:
 > psql -U datagouvmaster -d gouv_bak < .\datagouv_bak.sql
-> or from Pgadmin, or any other client, in the db datagouv
+> or from Pgadmin, or any other Postgres client, in the db datagouv
 
 ## Run dev server
 
