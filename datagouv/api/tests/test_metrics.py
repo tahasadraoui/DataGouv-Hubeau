@@ -215,7 +215,18 @@ class MetricsTestCase(TestCase):
                 {'id': self.chapeauroux_station.id, 'results_average': 10.575, 'code_station': '04027225', 'libelle_station': 'CHAPEAUROUX à AUROUX',
                     'code_departement': 48, 'code_region': 76, 'libelle_region': 'OCCITANIE', 'uri_station': 'http://id.eaufrance.fr/STQ/04027225'}
             ],
-            'average_results_by_departement': {'46': 2.303, '48': 5.5125}}
+            'average_results_by_departement': [
+                {'avarage_result': 2.303, 'code_departement': 46},
+                {'avarage_result': 5.5125, 'code_departement': 48}
+            ],
+            'weighted_average_results_by_departement': [
+                {'avarage_result': 1.8424,
+                 'code_departement': 46,
+                 'nb': 2},
+                {'avarage_result': 4.41,
+                 'code_departement': 48,
+                 'nb': 2}
+            ]}
         )
 
     def test_with_region_code(self):
@@ -230,7 +241,7 @@ class MetricsTestCase(TestCase):
         self.assertEqual(response.status_code, 201)
         data = response.json()
 
-        # Assert sans la station Condat --> 0.29 + 8.90 --> 9.19 / 2 --> 4.595
+        # Assert sans la station Condat --> 0.29 + 8.90 --> 9.19 / 2 --> 4.595 (was 2.303)
         self.assertEqual(data, {
             'best_stations': [
                 {'id': self.chapeauroux_station.id, 'results_average': 10.575, 'code_station': '04027225', 'libelle_station': 'CHAPEAUROUX à AUROUX',
@@ -248,5 +259,17 @@ class MetricsTestCase(TestCase):
                 {'id': self.chapeauroux_station.id, 'results_average': 10.575, 'code_station': '04027225', 'libelle_station': 'CHAPEAUROUX à AUROUX',
                     'code_departement': 48, 'code_region': 76, 'libelle_region': 'OCCITANIE', 'uri_station': 'http://id.eaufrance.fr/STQ/04027225'}
             ],
-            'average_results_by_departement': {'46': 4.595, '48': 5.5125}}
+            'average_results_by_departement': [
+                {'avarage_result': 4.595, 'code_departement': 46},
+                {'avarage_result': 5.5125, 'code_departement': 48}
+            ],
+            'weighted_average_results_by_departement': [
+                {'avarage_result': 3.676,
+                 'code_departement': 46,
+                 'nb': 2},
+                {'avarage_result': 4.41,
+                 'code_departement': 48,
+                 'nb': 2}
+            ]
+        }
         )

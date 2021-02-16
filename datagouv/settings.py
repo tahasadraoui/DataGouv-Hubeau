@@ -243,9 +243,9 @@ LOGGING = {
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 NOSE_ARGS = ['--cover-html-dir=reports/cover']
 
-# TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
-# if TESTING:
-#     logging.disable(logging.CRITICAL)
+TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
+if TESTING:
+    logging.disable(logging.CRITICAL)
 
 # HUBEAU_API_URL
 HUBEAU_API_URL = "https://hubeau.eaufrance.fr/api/v1/qualite_rivieres/"
