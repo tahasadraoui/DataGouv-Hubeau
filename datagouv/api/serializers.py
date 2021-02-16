@@ -51,7 +51,7 @@ class SyncEntitiesSerializer(DataGouvSerializer):
 
             try:
 
-                hubeau_connector.save_stations_by_page_to_db(region_code)
+                hubeau_connector.synchronize_entities("stations", region_code)
 
             except Exception as e:
                 logger.error(e)
@@ -64,7 +64,7 @@ class SyncEntitiesSerializer(DataGouvSerializer):
                 raise serializers.ValidationError(f"Missing parameter to sync analyses.")
 
             try:
-                hubeau_connector.save_analyses_by_page_and_week_to_db(region_code, first_analyse_date)
+                hubeau_connector.synchronize_entities("analyses", region_code, first_analyse_date)
 
             except Exception as e:
                 logger.error(e)
@@ -115,6 +115,6 @@ class MetricsSerializer(serializers.Serializer):
             .order_by('avg_results') \
             .values_list('avg_results', 'code_departement')
 
-        response["average_results_by_departement"] = [{'code_departement': int(item[1]), 'avarage_result': item[0]} for item in stations]
+        response["average_results_by_departement"] = [{'code_departement': int(item[1]), 'avarage_result': round(item[0], 4)} for item in stations]
 
         return response

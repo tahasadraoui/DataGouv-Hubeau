@@ -61,14 +61,14 @@ class Analyse(DataGouvModel):
     """
 
     station = models.ForeignKey(Station, on_delete=models.CASCADE)
-    nom_producteur = models.CharField(max_length=MAXIMUM_CODE_SIZE)
-    code_producteur = models.CharField(max_length=MAXIMUM_CODE_SIZE)
+    nom_producteur = models.CharField(max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
+    code_producteur = models.CharField(max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
     nom_reseau = models.CharField(max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
     code_reseau = models.CharField(max_length=MAXIMUM_CODE_SIZE, blank=True, null=True)
     incertitude_analytique = models.DecimalField(max_digits=16, decimal_places=4, blank=True, null=True)
     resultat = models.DecimalField(max_digits=10, decimal_places=4, blank=True, null=True, help_text="Résultat de l'analyse physico-chimique et microbiologique")
-    date_prelevement = models.DateField(help_text="Date du début du prélèvement d'échantillons")
-    heure_prelevement = models.TimeField(help_text="Heure du début du prélèvement d'échantillon")
+    date_prelevement = models.DateField(help_text="Date du début du prélèvement d'échantillons", blank=True, null=True)
+    heure_prelevement = models.TimeField(help_text="Heure du début du prélèvement d'échantillon", blank=True, null=True)
     date_analyse = models.DateField(help_text="Date de l'analyse physico-chimique et microbiologique", blank=True, null=True)
     heure_analyse = models.TimeField(help_text="Heure de l'analyse physico-chimique et microbiologique", blank=True, null=True)
 

@@ -14,8 +14,8 @@ from datagouv.api.models import *
 
 class HubEau:
     """
-        Un connecteur permettant de récupérer des entités différentes,
-        de l'API Qualité des cours d'eau.
+        Un connecteur permettant de récupérer des entités (stations, analyses) différentes,
+        de l'API Qualité des cours d'eau. Et les sauvegarder dans la base des données
     """
 
     def __init__(self):
@@ -36,9 +36,12 @@ class HubEau:
         self.nb_entities_updated = 0
         self.nb_entities_failed = 0
 
-    def save_entities(self, entity, data, first_analyse_date=None):
+    def save_entities(self, entity, data):
         """
+            This method saves the received entities to the DB
         """
+
+        self.nb_entities_found += len(data)
 
         if entity == "stations":
             EntityModel = Station
@@ -76,107 +79,33 @@ class HubEau:
                 logger.error(e)
                 self.nb_entities_failed += 1
 
-    def save_stations_by_page_to_db(self, region_code):
+    def synchronize_entities(self, entity, region_code, first_analyse_date=None):
         """
-            This method allows to get a given type of entity (station, analyse) by its region code,
-            and iterate over all pages from the paginted API response.
-            It's possible to get a sample, by specifying the maximum pages argument
-            
-            It gets and saves them, page by page, as it gets each one.
+            This is a proxy method that prepares the URL to sync the entities (stations, analyses)
         """
 
-        url = self.stations_url + f"?code_region={region_code}&exact_count=true&format=json&size=20"
-
-        page = 1
-
-        response = self.session.get(f"{url}&page={page}")
-        if response.status_code == 206:
-
-            logger.info(f"Count stations: {response.json()['count']}")
-            logger.info(f"Last url: {response.json()['last']}")
-
-            while response.json()["next"]:
-
-                if response.status_code == 206:
-
-                    if hasattr(settings, 'MAXIMUM_PAGES') and page == settings.MAXIMUM_PAGES:
-                        self.save_entities("stations", response.json()["data"])
-                        break
-
-                    else:
-
-                        self.save_entities("stations", response.json()["data"])
-                        page += 1
-                        response = self.session.get(f"{url}&page={page}")
-
-                else:
-                    logger.error(f"Error occured while getting stations: {response.status_code}, {response.text}")
-                    return False
-
+        if entity == "stations":
+            url = self.stations_url + f"?code_region={region_code}&exact_count=true&format=json&size=1000"
+        elif entity == "analyses":
+            url = self.analyses_url + f"?code_region={region_code}&exact_count=true&format=json&size=1000"
+            if first_analyse_date:
+                url += f"&date_debut_prelevement={first_analyse_date}"
         else:
-            logger.error(f"Error occured while getting stations: {response.status_code}, {response.text}")
-            return False
+            raise serializers.ValidationError(f"An unsupported entity type given to sync: {entity}")
 
-    def save_analyses_by_page_and_week_to_db(self, region_code, first_analyse_date):
+        self.sync_entities(entity, region_code, url)
 
-        # https://hubeau.eaufrance.fr/page/api-qualite-cours-deau-tuto
-        url = self.analyses_url + f"?code_region={region_code}&date_debut_prelevement={first_analyse_date}&exact_count=true&format=json&size=20"
+    def sync_entities(self, entity, region_code, url):
+        """
+            A recursive method keeps going through the 'next' in the API response,
+            to get all pages & objects
+        """
 
-        # No need to sync by week
-        if first_analyse_date + datetime.timedelta(days=7) > datetime.datetime.today().date():
+        response = requests.get(url)
 
-            page = 1
-            response = self.session.get(f"{url}&page={page}")
-            if response.status_code == 206:
-
-                while response.json()["next"]:
-
-                    if hasattr(settings, 'MAXIMUM_PAGES') and page == settings.MAXIMUM_PAGES:
-                        self.save_entities("analyses", response.json()["data"])
-                        break
-
-                    else:
-
-                        self.save_entities("analyses", response.json()["data"])
-                        page += 1
-                        response = self.session.get(f"{url}&page={page}")
-
-            else:
-                logger.error(f"Error occured while getting stations: {response.status_code}, {response.text}")
-                return False
-
+        if response:
+            self.save_entities(entity, response.json()["data"])
+            if response.json().get("next", None):
+                self.sync_entities(entity, region_code, response.json()["next"])
         else:
-            end_date = first_analyse_date + datetime.timedelta(days=7)
-            while end_date < datetime.datetime.today().date():
-
-                new_end_date = end_date + datetime.timedelta(days=7)
-
-                url = self.analyses_url + f"?code_region={region_code}&date_debut_prelevement={end_date}&exact_count=true&format=json&size=20" f"&date_fin_prelevement={str(new_end_date)}"
-                end_date = end_date + datetime.timedelta(days=7)
-                page = 1
-
-                response = self.session.get(f"{url}&page={page}")
-
-                if response.status_code == 206:
-
-                    while response.json()["next"]:
-
-                        if response.status_code == 206:
-
-                            if hasattr(settings, 'MAXIMUM_PAGES') and page == settings.MAXIMUM_PAGES:
-                                self.save_entities("analyses", response.json()["data"])
-                                break
-
-                            else:
-
-                                self.save_entities("analyses", response.json()["data"])
-                                page += 1
-                                response = self.session.get(f"{url}&page={page}")
-
-                        else:
-                            logger.error(f"Error occured while getting analyses: {response.status_code}, {response.text}")
-                            return False
-
-                else:
-                    logger.error(f"Error occured while getting analyses: {response.status_code}, {response.text}")
-                    return False
+            logger.error(f"Error occured while getting {entity}: {response.status_code}, {response.text}")
