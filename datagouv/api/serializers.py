@@ -7,6 +7,7 @@ from rest_framework import serializers
 
 from datagouv.api.models import *
 from datagouv.api.connectors.hubeau import HubEau
+from django.db.models import Count
 
 
 class DataGouvSerializer(serializers.ModelSerializer):
@@ -86,6 +87,8 @@ class MetricsSerializer(serializers.Serializer):
     number_of_items = serializers.IntegerField(required=False)
     region_code = serializers.IntegerField(required=False)
     average_results_by_departement = serializers.ListField(required=False)
+    weighted_average_results_by_departement = serializers.ListField(required=False)
+    cours_eau_by_departement = serializers.DictField(required=False)
 
     def create(self, validated_data):
 
@@ -101,20 +104,46 @@ class MetricsSerializer(serializers.Serializer):
 
         response = {}
 
-        # Average results by stations
-        stations = stations_queryset.annotate(avg_results=Avg('analyse__resultat')).order_by('-avg_results')
+        try:
 
-        response["best_stations"] = stations[:number_of_items]
+            # Average results by stations
+            stations = stations_queryset.annotate(avg_results=Avg('analyse__resultat')).order_by('-avg_results')
 
-        stations = stations.order_by('avg_results')
-        response["worst_stations"] = stations[:number_of_items]
+            response["best_stations"] = stations[:number_of_items]
 
-        # Average results by departements
-        stations = stations_queryset.values('code_departement') \
-            .annotate(avg_results=Avg('analyse__resultat')) \
-            .order_by('avg_results') \
-            .values_list('avg_results', 'code_departement')
+            stations = stations.order_by('avg_results')
+            response["worst_stations"] = stations[:number_of_items]
 
-        response["average_results_by_departement"] = [{'code_departement': int(item[1]), 'avarage_result': round(item[0], 4)} for item in stations]
+            # Average results by departements
+            stations = stations_queryset.values('code_departement') \
+                .annotate(avg_results=Avg('analyse__resultat')) \
+                .order_by('avg_results') \
+                .values_list('avg_results', 'code_departement')
+            
+            response["average_results_by_departement"] = []
+            average_results_by_departement = {}
+            
+            for item in stations:
+                response["average_results_by_departement"].append({'code_departement': int(item[1]), 'avarage_result': round(item[0], 4)})
+                average_results_by_departement[int(item[1])] = round(item[0], 4)
 
-        return response
+            # Best departements; average results must be weighted by number of stations (cours d'eau)
+            # Formula: if number of stations (cours d'eau) in departemenet < 10 --> result of dep * 0.8
+
+            stations_by_departement = Station.objects.values('code_departement').annotate(code_dep_count=Count('code_departement'))
+            cours_eau_by_departement = {item["code_departement"]: item["code_dep_count"]  for item in stations_by_departement}
+            response["cours_eau_by_departement"] = cours_eau_by_departement
+
+            weighted_average_results_by_departement = []
+            for departement, avg_results in average_results_by_departement.items():
+                if cours_eau_by_departement[departement] < 10:
+                    weighted_average_results_by_departement.append({departement: avg_results * 0.8})
+                else:
+                    weighted_average_results_by_departement.append({departement: avg_results})
+            response["weighted_average_results_by_departement"] = weighted_average_results_by_departement
+
+            return response
+
+        except Exception as e:
+            logger.error(e)
+            raise serializers.ValidationError("An error has occured while generating metrics.")

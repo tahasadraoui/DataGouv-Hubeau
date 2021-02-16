@@ -35,6 +35,7 @@ class HubEau:
         self.nb_entities_failed_to_create = 0
         self.nb_entities_updated = 0
         self.nb_entities_failed = 0
+        self.page = 0
 
     def save_entities(self, entity, data):
         """
@@ -93,6 +94,7 @@ class HubEau:
         else:
             raise serializers.ValidationError(f"An unsupported entity type given to sync: {entity}")
 
+        self.page = 0
         self.sync_entities(entity, region_code, url)
 
     def sync_entities(self, entity, region_code, url):
@@ -101,10 +103,16 @@ class HubEau:
             to get all pages & objects
         """
 
-        response = requests.get(url)
+        response = self.session.get(url)
+
+        # response = requests.get(url)
 
         if response:
             self.save_entities(entity, response.json()["data"])
+            self.page += 1
+            if hasattr(settings, 'MAXIMUM_PAGES'):
+                if settings.MAXIMUM_PAGES == self.page:
+                    return
             if response.json().get("next", None):
                 self.sync_entities(entity, region_code, response.json()["next"])
         else:
