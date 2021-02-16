@@ -2,7 +2,6 @@ from django.test import TestCase
 
 from rest_framework.test import APIClient
 
-from datagouv.api.views import MetricsViewSet
 from datagouv.api.models import Analyse, Station
 
 
@@ -19,9 +18,6 @@ class MetricsTestCase(TestCase):
 
         # URLs
         self.metrics_api_url = "/api/metrics/"
-
-        # View
-        self.metrics_create_view = MetricsViewSet.as_view(actions={'post': 'create'})
 
         # Stations
         self.allier_station = Station.objects.create(

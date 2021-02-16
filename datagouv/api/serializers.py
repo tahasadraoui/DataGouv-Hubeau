@@ -104,8 +104,7 @@ class MetricsSerializer(serializers.Serializer):
 
         response = {}
 
-        # try:
-        if 1:
+        try:
 
             # Average results by stations
             stations = stations_queryset.annotate(avg_results=Avg('analyse__resultat')).order_by('-avg_results')
@@ -120,10 +119,10 @@ class MetricsSerializer(serializers.Serializer):
                 .annotate(avg_results=Avg('analyse__resultat')) \
                 .order_by('avg_results') \
                 .values_list('avg_results', 'code_departement')
-            
+
             response["average_results_by_departement"] = []
             average_results_by_departement = {}
-            
+
             for item in stations:
                 response["average_results_by_departement"].append({'code_departement': int(item[1]), 'avarage_result': round(item[0], 4)})
                 average_results_by_departement[int(item[1])] = round(item[0], 4)
@@ -132,18 +131,20 @@ class MetricsSerializer(serializers.Serializer):
             # Formula: if number of stations (cours d'eau) in departemenet < 10 --> result of dep * 0.8
 
             stations_by_departement = Station.objects.values('code_departement').annotate(code_dep_count=Count('code_departement'))
-            cours_eau_by_departement = {item["code_departement"]: item["code_dep_count"]  for item in stations_by_departement}
+            cours_eau_by_departement = {item["code_departement"]: item["code_dep_count"] for item in stations_by_departement}
 
             weighted_average_results_by_departement = []
             for departement, avg_results in average_results_by_departement.items():
                 if int(cours_eau_by_departement[departement]) < 150:
-                    weighted_average_results_by_departement.append({"code_departement": departement, "avarage_result": round(avg_results * decimal.Decimal(0.8), 4), "nb": cours_eau_by_departement[departement]})
+                    weighted_average_results_by_departement.append({"code_departement": departement, "avarage_result": round(
+                        avg_results * decimal.Decimal(0.8), 4), "nb": cours_eau_by_departement[departement]})
                 else:
-                    weighted_average_results_by_departement.append({"code_departement": departement, "avarage_result": avg_results, "nb": cours_eau_by_departement[departement]})
+                    weighted_average_results_by_departement.append(
+                        {"code_departement": departement, "avarage_result": avg_results, "nb": cours_eau_by_departement[departement]})
             response["weighted_average_results_by_departement"] = weighted_average_results_by_departement
 
             return response
 
-        # except Exception as e:
-        #     logger.error(e)
-        #     raise serializers.ValidationError("An error has occured while generating metrics.")
+        except Exception as e:
+            logger.error(e)
+            raise serializers.ValidationError("An error has occured while generating metrics.")
