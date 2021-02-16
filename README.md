@@ -11,7 +11,8 @@ Projet Data Gouv Back :
 
 Create virtual env :
 
-> virtualenv --python python3.7 env
+> virtualenv --python python3.7 env (If you have python3.7 env variable), else
+> virtualenv env
 
 ## Activate the virtual env (Windows):
 
@@ -30,6 +31,10 @@ Create virtual env :
 > python manage.py makemigrations
 > python manage.py migrate
 
+## Restore the Dump
+
+> psql datagouv < datagouv_bak.sql
+
 ## Run dev server
 
 > python manage.py runserver
@@ -42,4 +47,4 @@ Create virtual env :
 
 > coverage html
 
-Then open htmlcov/index.html in your browser
+Then open htmlcov/index.html in your browser.
