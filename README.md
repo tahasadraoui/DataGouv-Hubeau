@@ -50,3 +50,10 @@ Create virtual env :
 > coverage html
 
 Then open htmlcov/index.html in your browser.
+
+## Conf:
+
+For demo purposes, MAXIMUM_PAGES was introduced in settings.py
+to specify the maximum number of synchronized pages of the API paginated response
+
+Commenting it is possible.
