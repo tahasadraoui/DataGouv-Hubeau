@@ -33,7 +33,7 @@ Create virtual env :
 
 ## Restore the Dump
 
-> psql datagouv < datagouv_bak.sql
+> Restore the datagouv_bak.sql from pgadmin, or any other client, in the db datagouv
 
 ## Run dev server
 
